@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: backend-config
+  namespace: devops-platform
+  labels:
+    app: backend
+
+data:
+  MYSQL_HOST: "mysql"
+  MYSQL_USER: "root"
+  MYSQL_DATABASE: "devopsdb"
+  FLASK_ENV: "production"
+  FLASK_DEBUG: "0"

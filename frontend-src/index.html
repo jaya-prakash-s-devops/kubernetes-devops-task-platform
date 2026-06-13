@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DevOps Task Platform</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════
+       AUTH SCREEN
+  ═══════════════════════════════════════ -->
+  <div id="auth-screen" class="screen">
+    <div class="auth-card">
+
+      <div class="brand">
+        <div class="brand-icon">⚙</div>
+        <h1 class="brand-name">DevOps Task Platform</h1>
+        <p class="brand-sub">CI/CD Automated · Docker · AWS EC2</p>
+      </div>
+
+      <!-- Tab switcher -->
+      <div class="tab-bar">
+        <button class="tab active" id="tab-login"    onclick="switchTab('login')">Login</button>
+        <button class="tab"        id="tab-register" onclick="switchTab('register')">Register</button>
+      </div>
+
+      <!-- Notification -->
+      <div id="auth-notification" class="notification hidden"></div>
+
+      <!-- Login form -->
+      <form id="login-form" class="auth-form" onsubmit="handleLogin(event)">
+        <div class="field">
+          <label>Username</label>
+          <input type="text" id="login-username" placeholder="Enter your username" autocomplete="username" required />
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="login-password" placeholder="Enter your password" autocomplete="current-password" required />
+        </div>
+        <button type="submit" class="btn btn-primary btn-full" id="login-btn">
+          <span class="btn-text">Login</span>
+          <span class="btn-spinner hidden">●</span>
+        </button>
+      </form>
+
+      <!-- Register form -->
+      <form id="register-form" class="auth-form hidden" onsubmit="handleRegister(event)">
+        <div class="field">
+          <label>Username</label>
+          <input type="text" id="reg-username" placeholder="Choose a username (min. 3 chars)" autocomplete="username" required />
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="reg-password" placeholder="Choose a password (min. 6 chars)" autocomplete="new-password" required />
+        </div>
+        <button type="submit" class="btn btn-primary btn-full" id="register-btn">
+          <span class="btn-text">Create Account</span>
+          <span class="btn-spinner hidden">●</span>
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════
+       DASHBOARD SCREEN
+  ═══════════════════════════════════════ -->
+  <div id="dashboard-screen" class="screen hidden">
+
+    <!-- Top navigation -->
+    <nav class="navbar">
+      <div class="nav-brand">
+        <span class="nav-icon">⚙</span>
+        <span class="nav-title">DevOps Task Platform</span>
+      </div>
+      <div class="nav-right">
+        <span class="nav-user" id="nav-username"></span>
+        <button class="btn btn-outline btn-sm" onclick="logout()">Logout</button>
+      </div>
+    </nav>
+
+    <main class="dashboard">
+
+      <!-- Stats row -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-num" id="stat-total">0</div>
+          <div class="stat-label">Total Tasks</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num pending" id="stat-pending">0</div>
+          <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num progress" id="stat-progress">0</div>
+          <div class="stat-label">In Progress</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num done" id="stat-done">0</div>
+          <div class="stat-label">Completed</div>
+        </div>
+      </div>
+
+      <!-- Add task -->
+      <div class="panel">
+        <h2 class="panel-title">Add New Task</h2>
+        <div id="task-notification" class="notification hidden"></div>
+        <form class="add-task-form" onsubmit="handleAddTask(event)">
+          <input
+            type="text"
+            id="task-input"
+            class="task-input"
+            placeholder="Describe your task..."
+            maxlength="200"
+            required
+          />
+          <button type="submit" class="btn btn-primary" id="add-task-btn">
+            <span class="btn-text">+ Add Task</span>
+            <span class="btn-spinner hidden">●</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Filter bar -->
+      <div class="filter-bar">
+        <span class="filter-label">Filter:</span>
+        <button class="filter-btn active" data-filter="All"         onclick="setFilter(this)">All</button>
+        <button class="filter-btn"        data-filter="Pending"     onclick="setFilter(this)">Pending</button>
+        <button class="filter-btn"        data-filter="In Progress" onclick="setFilter(this)">In Progress</button>
+        <button class="filter-btn"        data-filter="Completed"   onclick="setFilter(this)">Completed</button>
+      </div>
+
+      <!-- Task list -->
+      <div id="task-list" class="task-list">
+        <div class="task-empty" id="task-empty">
+          <div class="empty-icon">📋</div>
+          <p>No tasks yet. Add your first task above.</p>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════
+       EDIT MODAL
+  ═══════════════════════════════════════ -->
+  <div id="edit-modal" class="modal-overlay hidden" onclick="closeModal(event)">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Edit Task</h3>
+        <button class="modal-close" onclick="closeEditModal()">✕</button>
+      </div>
+      <form onsubmit="handleUpdateTask(event)">
+        <div class="field">
+          <label>Task Title</label>
+          <input type="text" id="edit-title" maxlength="200" required />
+        </div>
+        <div class="field">
+          <label>Status</label>
+          <select id="edit-status">
+            <option value="Pending">Pending</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" onclick="closeEditModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

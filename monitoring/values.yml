@@ -1,0 +1,28 @@
+grafana:
+  adminPassword: "devops-grafana-2024"
+
+  service:
+    type: NodePort
+    nodePort: 32000
+
+  dashboards:
+    default:
+      kubernetes-cluster:
+        gnetId: 7249
+        revision: 1
+        datasource: Prometheus
+
+      node-exporter:
+        gnetId: 1860
+        revision: 1
+        datasource: Prometheus
+
+prometheus:
+  service:
+    type: NodePort
+    nodePort: 32001
+
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelector: {}
+    serviceMonitorNamespaceSelector: {}
