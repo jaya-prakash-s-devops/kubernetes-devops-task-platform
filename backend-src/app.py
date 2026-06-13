@@ -218,7 +218,7 @@ def health():
 
 @app.route("/", methods=["GET"])
 def home():
-    return ok(message="DevOps Task Platform API v2 is running.")
+    return ok(message="DevOps Task Platform API v3 is running.")
 
 
 # ══════════════════════════════════════════════════════════════════
