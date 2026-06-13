@@ -14,9 +14,6 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    outputs:
-      image_tag: ${{ steps.tag.outputs.tag }}
-
     steps:
 
       - name: Checkout Code
@@ -34,56 +31,29 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build Image
+      - name: Build Docker Image
         run: |
-          docker build -t $BACKEND_IMAGE:${{ steps.tag.outputs.tag }} .
+          docker build \
+            -t $BACKEND_IMAGE:${{ steps.tag.outputs.tag }} \
+            -f backend-src/Dockerfile \
+            backend-src
 
       - name: Push Version Tag
         run: |
           docker push $BACKEND_IMAGE:${{ steps.tag.outputs.tag }}
 
+      - name: Tag Latest
+        run: |
+          docker tag \
+          $BACKEND_IMAGE:${{ steps.tag.outputs.tag }} \
+          $BACKEND_IMAGE:latest
+
       - name: Push Latest Tag
         run: |
-          docker tag $BACKEND_IMAGE:${{ steps.tag.outputs.tag }} $BACKEND_IMAGE:latest
           docker push $BACKEND_IMAGE:latest
 
-  deploy:
-
-    needs: build-and-push
-
-    runs-on: ubuntu-latest
-
-    steps:
-
-      - name: Install kubectl
-        uses: azure/setup-kubectl@v4
-        with:
-          version: v1.29.0
-
-      - name: Configure kubeconfig
+      - name: Verify Docker Image
         run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 --decode > ~/.kube/config
-          chmod 600 ~/.kube/config
-
-      - name: Update Deployment Image
-        run: |
-          kubectl set image deployment/backend \
-          backend=$BACKEND_IMAGE:${{ needs.build-and-push.outputs.image_tag }} \
-          -n devops-platform
-
-      - name: Wait For Rollout
-        run: |
-          kubectl rollout status deployment/backend \
-          -n devops-platform \
-          --timeout=300s
-
-      - name: Verify Pods
-        run: |
-          kubectl get pods -n devops-platform
-
-      - name: Rollback On Failure
-        if: failure()
-        run: |
-          kubectl rollout undo deployment/backend \
-          -n devops-platform
+          echo "Successfully pushed:"
+          echo "$BACKEND_IMAGE:${{ steps.tag.outputs.tag }}"
+          echo "$BACKEND_IMAGE:latest"
