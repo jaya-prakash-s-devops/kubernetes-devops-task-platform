@@ -8,7 +8,7 @@ metadata:
     app: frontend
 
 spec:
-  replicas: 1
+  replicas: 3
 
   strategy:
     type: RollingUpdate
@@ -33,6 +33,27 @@ spec:
 
           ports:
             - containerPort: 80
+
+
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+
+            initialDelaySeconds: 10
+            periodSeconds: 10
+
+
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+
+            initialDelaySeconds: 30
+            periodSeconds: 20
+
+          securityContext:
+            allowPrivilegeEscalation: false
 
           resources:
             requests:

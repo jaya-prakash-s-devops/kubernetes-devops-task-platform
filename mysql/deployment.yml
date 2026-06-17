@@ -54,6 +54,15 @@ spec:
             - name: mysql-storage
               mountPath: /var/lib/mysql
 
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+
           readinessProbe:
             exec:
               command:
@@ -65,12 +74,26 @@ spec:
             initialDelaySeconds: 20
             periodSeconds: 10
 
+          livenessProbe:
+            exec:
+              command:
+                - mysqladmin
+                - ping
+                - -h
+                - localhost
+
+            initialDelaySeconds: 60
+            periodSeconds: 20
+
         - name: mysqld-exporter
           image: prom/mysqld-exporter:v0.14.0
 
           env:
-           - name: DATA_SOURCE_NAME
-             value: "root:rootpassword@(127.0.0.1:3306)/"
+            - name: DATA_SOURCE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-exporter-secret
+                  key: datasource
 
           ports:
             - containerPort: 9104
@@ -80,4 +103,3 @@ spec:
         - name: mysql-storage
           persistentVolumeClaim:
             claimName: mysql-pvc
-
