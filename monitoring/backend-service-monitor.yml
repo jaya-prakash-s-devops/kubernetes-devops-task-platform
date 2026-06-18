@@ -8,6 +8,8 @@ metadata:
     release: monitoring
 
 spec:
+  jobLabel: app
+
   selector:
     matchLabels:
       app: backend
