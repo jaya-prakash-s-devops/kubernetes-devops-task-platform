@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: jsdaya2211/frontend:v3
+          image: jsdaya2211/frontend-image:v2
           imagePullPolicy: Always
 
           ports:
