@@ -2,3 +2,14 @@
 __pycache__/
 *.pyc
 mysql-data/
+
+# backup files
+cluster-state-backup.yaml
+storage-backup.yaml
+ingress-backup.yaml
+configmap-backup.yaml
+secret-backup.yaml
+alertmanager-backup.yaml
+cluster-final-backup.yaml
+iptables-backup.txt
+nft.txt

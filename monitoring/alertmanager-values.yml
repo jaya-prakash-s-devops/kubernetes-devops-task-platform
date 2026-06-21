@@ -1,0 +1,26 @@
+alertmanager:
+  config:
+    global:
+      smtp_smarthost: 'smtp.gmail.com:587'
+      smtp_from: 'jayaprakash.devops.engineer@gmail.com'
+      smtp_auth_username: 'jayaprakash.devops.engineer@gmail.com'
+      smtp_auth_password: 'qluf yktg hcrg pkui'
+
+    route:
+      receiver: email-notifications
+      group_wait: 10s
+      group_interval: 30s
+      repeat_interval: 1h
+
+      routes:
+        - matchers:
+            - alertname = "Watchdog"
+          receiver: "null"
+
+    receivers:
+      - name: email-notifications
+        email_configs:
+          - to: 'jayaprakash.devops.engineer@gmail.com'
+            send_resolved: true
+
+      - name: "null"

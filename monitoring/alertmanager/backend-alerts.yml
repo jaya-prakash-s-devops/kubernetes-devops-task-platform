@@ -1,0 +1,31 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+
+metadata:
+  name: backend-alerts
+  namespace: monitoring
+  labels:
+    release: monitoring
+
+spec:
+  groups:
+  - name: backend.rules
+    rules:
+
+    - alert: BackendDown
+      expr: absent(up{job="backend"})
+      for: 1m
+      labels:
+        severity: critical
+      annotations:
+        summary: Backend Down
+        description: Backend service is unreachable
+
+    - alert: BackendReplicasLow
+      expr: kube_deployment_status_replicas_available{deployment="backend"} < 3
+      for: 1m
+      labels:
+        severity: warning
+      annotations:
+        summary: Backend Replicas Low
+        description: Less than 3 backend replicas available

@@ -1,0 +1,28 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+
+metadata:
+  name: mysql-alerts
+  namespace: monitoring
+  labels:
+    release: monitoring
+
+spec:
+  groups:
+
+  - name: mysql.rules
+
+    rules:
+
+    - alert: MysqlDown
+
+      expr: up{job="mysql"} == 0
+
+      for: 1m
+
+      labels:
+        severity: critical
+
+      annotations:
+        summary: MySQL Down
+        description: MySQL exporter is unreachable

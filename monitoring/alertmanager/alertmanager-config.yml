@@ -1,0 +1,29 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+
+metadata:
+  name: gmail-alertmanager
+  namespace: monitoring
+  labels:
+    release: monitoring
+
+spec:
+  route:
+    receiver: gmail
+
+  receivers:
+  - name: gmail
+
+    emailConfigs:
+    - to: jayaprakash.devops.engineer@gmail.com
+      from: jayaprakash.devops.engineer@gmail.com
+
+      smarthost: smtp.gmail.com:587
+
+      authUsername: jayaprakash.devops.engineer@gmail.com
+
+      authPassword:
+        name: alertmanager-gmail-secret
+        key: password
+
+      requireTLS: true
