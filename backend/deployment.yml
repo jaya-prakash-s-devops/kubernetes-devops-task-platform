@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: jsdaya2211/backend-image:v5
+        image: jsdaya2211/backend-image:d17cb68
         imagePullPolicy: Always
 
         ports:
