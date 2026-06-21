@@ -25,7 +25,7 @@ jobs:
       - name: Generate Image Tag
         id: tag
         run: |
-          TAG=${GITHUB_SHA::7}
+          TAG=$(date +'%Y.%m.%d-%H%M')
           echo "tag=$TAG" >> $GITHUB_OUTPUT
 
       - name: Login to Docker Hub
@@ -42,7 +42,7 @@ jobs:
             -f backend-src/Dockerfile \
             backend-src
 
-      - name: Push Backend Image
+      - name: Push Backend Images
         run: |
           docker push $BACKEND_IMAGE:${{ steps.tag.outputs.tag }}
           docker push $BACKEND_IMAGE:latest
@@ -55,7 +55,7 @@ jobs:
             -f frontend-src/Dockerfile \
             frontend-src
 
-      - name: Push Frontend Image
+      - name: Push Frontend Images
         run: |
           docker push $FRONTEND_IMAGE:${{ steps.tag.outputs.tag }}
           docker push $FRONTEND_IMAGE:latest
@@ -63,14 +63,14 @@ jobs:
       - name: Update Backend Manifest
         run: |
           sed -i \
-          "s|image: jsdaya2211/backend-image:.*|image: jsdaya2211/backend-image:${{ steps.tag.outputs.tag }}|g" \
-          backend/deployment.yml
+            "s|image: jsdaya2211/backend-image:.*|image: jsdaya2211/backend-image:${{ steps.tag.outputs.tag }}|g" \
+            backend/deployment.yml
 
       - name: Update Frontend Manifest
         run: |
           sed -i \
-          "s|image: jsdaya2211/frontend:.*|image: jsdaya2211/frontend:${{ steps.tag.outputs.tag }}|g" \
-          frontend/deployment.yml
+            "s|image: jsdaya2211/frontend:.*|image: jsdaya2211/frontend:${{ steps.tag.outputs.tag }}|g" \
+            frontend/deployment.yml
 
       - name: Commit Updated Manifests
         run: |
@@ -80,7 +80,8 @@ jobs:
           git add backend/deployment.yml
           git add frontend/deployment.yml
 
-          git commit -m "chore: update image tags [skip ci]" || exit 0
+          git diff --staged --quiet || \
+          git commit -m "chore: update image tags [skip ci]"
 
           git push origin production-v2
 
