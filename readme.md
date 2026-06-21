@@ -1,53 +1,97 @@
-# 🚀 Kubernetes DevOps Task Platform
+# 🚀 Production-Grade GitOps DevOps Task Management Platform
 
-A production-style Kubernetes deployment project demonstrating containerization, CI automation, Kubernetes orchestration, ingress networking, monitoring, and observability.
+A production-style GitOps Kubernetes platform demonstrating modern DevOps practices including containerization, CI automation, GitOps deployment, Kubernetes orchestration, monitoring, observability, and automated application delivery.
 
-This project deploys a full-stack Task Management Application consisting of a Frontend, Backend API, and MySQL Database on Kubernetes. The application is containerized using Docker, automatically built and pushed to Docker Hub using GitHub Actions, and monitored using Prometheus and Grafana.
+The platform deploys a full-stack Task Management Application consisting of:
+
+- Frontend (NGINX)
+- Backend API (Flask)
+- MySQL Database
+
+The application is containerized using Docker, built automatically using GitHub Actions, published to Docker Hub, and deployed to a K3s Kubernetes cluster using ArgoCD GitOps workflows.
 
 ---
 
-# 📌 Features
+# 📌 Key Features
 
-* Dockerized Frontend and Backend
-* MySQL Database with Persistent Storage
-* Kubernetes Deployments and Services
-* Namespace Isolation
-* ConfigMaps and Secrets
-* NGINX Ingress Controller
-* GitHub Actions CI Pipeline
-* Docker Hub Image Publishing
-* Prometheus Monitoring
-* Grafana Dashboard Visualization
-* ServiceMonitor Integration
-* MySQL Exporter Metrics
-* Backend Application Metrics
+## GitOps Deployment
+
+- ArgoCD Continuous Delivery
+- Automatic Kubernetes Manifest Updates
+- Git as Single Source of Truth
+- Self-Healing Deployments
+- Automated Synchronization
+
+## CI Automation
+
+- GitHub Actions Pipeline
+- Automated Docker Builds
+- Docker Hub Publishing
+- Automatic Image Tag Management
+
+## Kubernetes
+
+- K3s Cluster
+- Deployments
+- Services
+- ConfigMaps
+- Secrets
+- Persistent Volume Claims
+- Rolling Updates
+- Multi-Replica Deployments
+
+## Monitoring & Observability
+
+- Prometheus
+- Grafana
+- Alertmanager
+- Node Exporter
+- Kube State Metrics
+- MySQL Exporter
+- Custom Flask Metrics
 
 ---
 
 # 🏗️ Architecture
 
 ```text
-                     User
-                       │
-                       ▼
-                NGINX Ingress
-                       │
-          ┌────────────┴────────────┐
-          ▼                         ▼
-    Frontend Service         Backend Service
-                                      │
-                                      ▼
-                              MySQL Database
-```
-
-Monitoring Stack
-
-```text
-Backend Metrics ──┐
-                  │
-MySQL Metrics ────┼──► Prometheus ───► Grafana
-                  │
-Cluster Metrics ──┘
+Developer
+    │
+    ▼
+GitHub Repository
+    │
+    ▼
+GitHub Actions
+(Build & Push Images)
+    │
+    ▼
+Docker Hub
+    │
+    ▼
+Update Kubernetes Manifests
+    │
+    ▼
+Git Repository
+    │
+    ▼
+ArgoCD
+    │
+    ▼
+K3s Kubernetes Cluster
+    │
+ ┌──┼─────────────┐
+ ▼  ▼             ▼
+Frontend       Backend       MySQL
+(NGINX)        (Flask)
+                    │
+                    ▼
+            Prometheus
+                    │
+                    ▼
+               Grafana
+                    │
+                    ▼
+              Alertmanager
 ```
 
 ---
@@ -56,42 +100,75 @@ Cluster Metrics ──┘
 
 ## Containerization
 
-* Docker
+- Docker
 
-## CI
+## GitOps & CI/CD
 
-* GitHub Actions
-
-## Container Registry
-
-* Docker Hub
+- GitHub Actions
+- ArgoCD
+- Docker Hub
 
 ## Kubernetes
 
-* Minikube
-* Deployments
-* Services
-* Ingress
-* ConfigMaps
-* Secrets
-* Persistent Volume Claims
+- K3s
+- Deployments
+- Services
+- ConfigMaps
+- Secrets
+- PVC
+- Ingress
 
 ## Monitoring
 
-* Prometheus
-* Grafana
-* Prometheus Operator
-* ServiceMonitor
-* Node Exporter
-* Kube State Metrics
+- Prometheus
+- Grafana
+- Alertmanager
+- ServiceMonitor
+- Node Exporter
+- Kube State Metrics
+- MySQL Exporter
 
 ## Application
 
-* Python Flask
-* HTML
-* CSS
-* JavaScript
-* MySQL
+- Python Flask
+- MySQL
+- HTML
+- CSS
+- JavaScript
+- NGINX
+
+---
+
+# 🔄 GitOps Workflow
+
+```text
+Developer Pushes Code
+        │
+        ▼
+GitHub Actions Triggered
+        │
+        ▼
+Build Backend Image
+Build Frontend Image
+        │
+        ▼
+Push Images To Docker Hub
+        │
+        ▼
+Update deployment.yml Image Tags
+        │
+        ▼
+Commit Changes Back To Git
+        │
+        ▼
+ArgoCD Detects Changes
+        │
+        ▼
+Automatic Sync
+        │
+        ▼
+Rolling Deployment To K3s
+```
 
 ---
 
@@ -99,6 +176,13 @@ Cluster Metrics ──┘
 
 ```text
 .
+├── .github
+│   └── workflows
+│       └── deploy.yml
+│
+├── argocd
+│   └── application.yml
+│
 ├── backend
 │   ├── configmap.yml
 │   ├── deployment.yml
@@ -120,6 +204,12 @@ Cluster Metrics ──┘
 │   ├── script.js
 │   └── style.css
 │
+├── mysql
+│   ├── deployment.yml
+│   ├── pvc.yml
+│   ├── secret.yml
+│   └── service.yml
+│
 ├── ingress
 │   └── ingress.yml
 │
@@ -127,199 +217,267 @@ Cluster Metrics ──┘
 │   └── namespace.yml
 │
 ├── monitoring
+│   ├── alertmanager
+│   ├── alerts
 │   ├── backend-service-monitor.yml
 │   ├── mysql-service-monitor.yml
-│   └── values.yml
+│   ├── values.yml
+│   └── alertmanager-values.yml
 │
-├── mysql
-│   ├── deployment.yml
-│   ├── pvc.yml
-│   ├── secret.yml
-│   └── service.yml
-│
-├── screenshots
-│
-└── .github/workflows
-    └── deploy.yml
+└── screenshots
 ```
-
----
-
-# ⚙️ CI Pipeline
-
-The GitHub Actions workflow automates Docker image creation and publishing.
-
-### Workflow Steps
-
-1. Checkout Source Code
-2. Generate Image Version Tag
-3. Login to Docker Hub
-4. Build Docker Image
-5. Push Version Tag
-6. Tag Latest Image
-7. Push Latest Tag
-8. Verify Image Availability
-
-Whenever code changes are pushed to GitHub, a new Docker image is automatically built and published to Docker Hub.
 
 ---
 
 # ☸️ Kubernetes Resources
 
-### Namespace
+Current Deployment:
 
-* devops-platform
-
-### Backend
-
-* Deployment
-* Service
-* ConfigMap
-* Secret
-
-### Frontend
-
-* Deployment
-* Service
-
-### Database
-
-* MySQL Deployment
-* Service
-* Secret
-* PVC
-
-### Networking
-
-* NGINX Ingress Controller
-* Ingress Resource
-
-### Monitoring
-
-* Prometheus
-* Grafana
-* ServiceMonitor
-* Node Exporter
-* Kube State Metrics
+- Backend Deployment (3 Replicas)
+- Frontend Deployment (3 Replicas)
+- MySQL Deployment (1 Replica)
+- ConfigMaps
+- Secrets
+- Persistent Storage (PVC)
+- NodePort Services
+- ArgoCD Application
+- Prometheus Monitoring Stack
+- Grafana Dashboards
+- Alertmanager Configuration
 
 ---
 
 # 📊 Monitoring & Observability
 
-Prometheus is configured to scrape:
+Prometheus Scrapes:
 
-### Backend Metrics
+- Backend Application Metrics
+- MySQL Metrics
+- Node Exporter Metrics
+- Kubernetes Metrics
+- Kube State Metrics
 
-* Application Metrics Endpoint
-* ServiceMonitor Integration
+Grafana Dashboards Include:
 
-### MySQL Metrics
+### Infrastructure Health
 
-* MySQL Exporter Metrics
-* Database Monitoring
+- Node CPU Usage
+- Node Memory Usage
 
-### Cluster Metrics
+### Application Health
 
-* Node Exporter
-* Kubernetes State Metrics
+- Backend Pods Availability
+- Backend Replica Status
 
-Grafana is connected to Prometheus and provides dashboard visualization for cluster and application monitoring.
+### Database Health
 
----
+- MySQL Availability
+- Database Connectivity
 
-# ✅ Deployment Verification
+### Traffic Metrics
 
-Successfully Running Components:
+- Total Requests
+- Backend Request Rate
 
-* Frontend Pod
-* Backend Pod
-* MySQL Pod
-* Prometheus
-* Grafana
-* Node Exporter
-* Kube State Metrics
+### Performance Metrics
 
-Prometheus Monitoring Targets:
+- Backend Response Time
+- Backend Success Rate
+- Backend Error Rate
 
-* Backend Service Monitor
-* MySQL Service Monitor
+### Database Performance
 
-All monitoring targets are successfully scraped by Prometheus.
+- MySQL Queries per Second
+- MySQL Connections
+- MySQL Uptime
 
 ---
 
 # 📸 Screenshots
 
-## Login Page
+## Application Login Page
 
-<img src="screenshots/login-page.png" width="100%">
-
----
+```md
+![Application Login](screenshots/application-login-page.png)
+```
 
 ## Application Dashboard
 
-<img src="screenshots/application-dashboard.png" width="100%">
+```md
+![Application Dashboard](screenshots/application-dashboard.png)
+```
+
+## Infrastructure Health Dashboard
+
+```md
+![Infrastructure Health](screenshots/grafana-infrastructure-health.png)
+```
+
+## Application Metrics Dashboard
+
+```md
+![Application Metrics](screenshots/grafana-application-metrics.png)
+```
+
+## Cluster & Database Health Dashboard
+
+```md
+![Cluster Database Health](screenshots/grafana-cluster-database-health.png)
+```
+
+## Database Performance Dashboard
+
+```md
+![Database Performance](screenshots/grafana-database-performance.png)
+```
+
+## Kubernetes Resources
+
+```md
+![Kubernetes Resources](screenshots/kubernetes-resources.png)
+```
+
+## ArgoCD GitOps Synchronization
+
+```md
+![ArgoCD GitOps Sync](screenshots/argocd-gitops-sync.png)
+```
+
+## Prometheus Backend Targets
+
+```md
+![Prometheus Backend Targets](screenshots/prometheus-backend-targets.png)
+```
+
+## Prometheus MySQL Targets
+
+```md
+![Prometheus MySQL Target](screenshots/prometheus-mysql-target.png)
+```
+
+## Prometheus Cluster Monitoring
+
+```md
+![Prometheus Cluster Monitoring](screenshots/prometheus-cluster-monitoring.png)
+```
+
+## Prometheus Core Services
+
+```md
+![Prometheus Core Services](screenshots/prometheus-core-services.png)
+```
 
 ---
 
-## Kubernetes Deployment
+# ⚙️ GitHub Actions CI Pipeline
 
-<img src="screenshots/kubernetes-deployment.png" width="100%">
+Workflow Steps:
 
----
+1. Checkout Repository
+2. Generate Image Tag
+3. Login To Docker Hub
+4. Build Backend Image
+5. Push Backend Image
+6. Build Frontend Image
+7. Push Frontend Image
+8. Update Kubernetes Manifests
+9. Commit Updated Image Tags
+10. Push Changes To GitHub
 
-## Prometheus Targets
-
-<img src="screenshots/prometheus-targets.png" width="100%">
-
----
-
-## Grafana Dashboard
-
-<img src="screenshots/grafana-dashboard.png" width="100%">
-
----
-
-## GitHub Actions Pipeline
-
-<img src="screenshots/github-actions-success.png" width="100%">
+This enables a complete GitOps workflow where image updates are automatically reflected in Kubernetes manifests.
 
 ---
 
-## Docker Hub Repository
+# 🚀 ArgoCD GitOps Deployment
 
-<img src="screenshots/dockerhub-images.png" width="100%">
+ArgoCD continuously watches the `production-v2` branch.
+
+When GitHub Actions updates image tags:
+
+```yaml
+image: jsdaya2211/backend-image:da7a217
+image: jsdaya2211/frontend:da7a217
+```
+
+ArgoCD automatically:
+
+- Detects Manifest Changes
+- Syncs The Application
+- Performs Rolling Updates
+- Maintains Desired State
+- Self-Heals Drift
+
+No manual deployment commands are required.
+
+---
+
+# ✅ Deployment Verification
+
+Successfully Running:
+
+- Frontend Deployment (3 Pods)
+- Backend Deployment (3 Pods)
+- MySQL Deployment (1 Pod)
+- ArgoCD
+- Prometheus
+- Grafana
+- Alertmanager
+- Node Exporter
+- Kube State Metrics
+
+Prometheus Targets:
+
+- Backend Monitor → UP
+- MySQL Monitor → UP
+- Node Exporter → UP
+- Kube State Metrics → UP
+- Prometheus Service → UP
+
+ArgoCD Status:
+
+- Healthy
+- Synced
+- Auto Sync Enabled
+- Self Heal Enabled
 
 ---
 
 # 🎯 Learning Outcomes
 
-Through this project, I gained hands-on experience with:
+This project demonstrates hands-on experience with:
 
-* Docker Containerization
-* GitHub Actions Automation
-* Docker Hub Registry Management
-* Kubernetes Deployments and Services
-* Ingress Configuration
-* ConfigMaps and Secrets
-* Persistent Storage Management
-* Prometheus Monitoring
-* Grafana Visualization
-* ServiceMonitor Configuration
-* Kubernetes Troubleshooting
-* DevOps Best Practices
+- Docker Containerization
+- GitHub Actions Automation
+- Docker Hub Registry
+- K3s Kubernetes
+- Kubernetes Deployments
+- Services
+- ConfigMaps
+- Secrets
+- Persistent Storage
+- GitOps Workflows
+- ArgoCD
+- Prometheus Monitoring
+- Grafana Dashboards
+- Alertmanager
+- ServiceMonitor
+- MySQL Exporter
+- Rolling Deployments
+- Infrastructure Monitoring
+- Kubernetes Troubleshooting
+- Production-Style DevOps Practices
 
 ---
 
 # 🚀 Future Improvements
 
-* Helm Charts
-* ArgoCD GitOps Deployment
-* Horizontal Pod Autoscaling
-* TLS with Cert Manager
-* AlertManager Integration
-* Centralized Logging (ELK Stack)
-* Multi-Environment Deployment Strategy
+- Horizontal Pod Autoscaler (HPA)
+- Cert-Manager TLS Certificates
+- Multi-Node K3s Cluster
+- Slack Alert Notifications
+- Backup & Disaster Recovery
+- Centralized Logging (ELK/Loki)
+- Helm Chart Packaging
 
 ---
 
@@ -329,4 +487,4 @@ Through this project, I gained hands-on experience with:
 
 GitHub: https://github.com/jaya-prakash-s-devops
 
-LinkedIn: Add your LinkedIn profile link here
+LinkedIn: https://www.linkedin.com/in/jaya-prakash-s-devops
