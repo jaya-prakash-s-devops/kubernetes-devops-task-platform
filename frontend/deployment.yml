@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: jsdaya2211/frontend:2026.06.21-2106
+          image: jsdaya2211/frontend:2026.06.21-2118
           imagePullPolicy: Always
 
           ports:
