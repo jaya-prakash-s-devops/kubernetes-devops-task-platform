@@ -1,0 +1,59 @@
+name: Backend CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  BACKEND_IMAGE: jsdaya2211/backend-image
+
+jobs:
+
+  build-and-push:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Generate Image Tag
+        id: tag
+        run: |
+          TAG=$(date +'%Y.%m%d.%H%M')
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build Docker Image
+        run: |
+          docker build \
+            -t $BACKEND_IMAGE:${{ steps.tag.outputs.tag }} \
+            -f backend-src/Dockerfile \
+            backend-src
+
+      - name: Push Version Tag
+        run: |
+          docker push $BACKEND_IMAGE:${{ steps.tag.outputs.tag }}
+
+      - name: Tag Latest
+        run: |
+          docker tag \
+          $BACKEND_IMAGE:${{ steps.tag.outputs.tag }} \
+          $BACKEND_IMAGE:latest
+
+      - name: Push Latest Tag
+        run: |
+          docker push $BACKEND_IMAGE:latest
+
+      - name: Verify Docker Image
+        run: |
+          echo "Successfully pushed:"
+          echo "$BACKEND_IMAGE:${{ steps.tag.outputs.tag }}"
+          echo "$BACKEND_IMAGE:latest"
