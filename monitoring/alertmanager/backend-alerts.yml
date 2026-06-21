@@ -13,13 +13,22 @@ spec:
     rules:
 
     - alert: BackendDown
+      expr: up{job="backend"} == 0
+      for: 1m
+      labels:
+        severity: critical
+      annotations:
+        summary: Backend is down
+        description: Backend metrics endpoint not reachable
+
+    - alert: BackendTargetMissing
       expr: absent(up{job="backend"})
       for: 1m
       labels:
         severity: critical
       annotations:
-        summary: Backend Down
-        description: Backend service is unreachable
+        summary: Backend target missing
+        description: Backend target disappeared from Prometheus
 
     - alert: BackendReplicasLow
       expr: kube_deployment_status_replicas_available{deployment="backend"} < 3
@@ -27,5 +36,5 @@ spec:
       labels:
         severity: warning
       annotations:
-        summary: Backend Replicas Low
-        description: Less than 3 backend replicas available
+        summary: Backend replicas low
+        description: Less than 3 backend pods available
