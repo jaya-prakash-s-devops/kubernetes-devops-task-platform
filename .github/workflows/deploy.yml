@@ -1,26 +1,31 @@
-name: DevOps Platform CI
+name: DevOps Platform GitOps CI/CD
 
 on:
   push:
     branches:
       - production-v2
 
+permissions:
+  contents: write
+
 env:
   BACKEND_IMAGE: jsdaya2211/backend-image
   FRONTEND_IMAGE: jsdaya2211/frontend
 
 jobs:
-  build-and-push:
+  build-push-and-update:
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Generate Image Tag
         id: tag
         run: |
-          TAG=$(date +'%Y.%m.%d-%H%M')
+          TAG=${GITHUB_SHA::7}
           echo "tag=$TAG" >> $GITHUB_OUTPUT
 
       - name: Login to Docker Hub
@@ -37,7 +42,7 @@ jobs:
             -f backend-src/Dockerfile \
             backend-src
 
-      - name: Push Backend Images
+      - name: Push Backend Image
         run: |
           docker push $BACKEND_IMAGE:${{ steps.tag.outputs.tag }}
           docker push $BACKEND_IMAGE:latest
@@ -50,12 +55,39 @@ jobs:
             -f frontend-src/Dockerfile \
             frontend-src
 
-      - name: Push Frontend Images
+      - name: Push Frontend Image
         run: |
           docker push $FRONTEND_IMAGE:${{ steps.tag.outputs.tag }}
           docker push $FRONTEND_IMAGE:latest
 
-      - name: Summary
+      - name: Update Backend Manifest
         run: |
-          echo "Backend: $BACKEND_IMAGE:${{ steps.tag.outputs.tag }}"
-          echo "Frontend: $FRONTEND_IMAGE:${{ steps.tag.outputs.tag }}"
+          sed -i \
+          "s|image: jsdaya2211/backend-image:.*|image: jsdaya2211/backend-image:${{ steps.tag.outputs.tag }}|g" \
+          backend/deployment.yml
+
+      - name: Update Frontend Manifest
+        run: |
+          sed -i \
+          "s|image: jsdaya2211/frontend:.*|image: jsdaya2211/frontend:${{ steps.tag.outputs.tag }}|g" \
+          frontend/deployment.yml
+
+      - name: Commit Updated Manifests
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+
+          git add backend/deployment.yml
+          git add frontend/deployment.yml
+
+          git commit -m "chore: update image tags [skip ci]" || exit 0
+
+          git push origin production-v2
+
+      - name: Deployment Summary
+        run: |
+          echo "Backend Image:"
+          echo "$BACKEND_IMAGE:${{ steps.tag.outputs.tag }}"
+          echo ""
+          echo "Frontend Image:"
+          echo "$FRONTEND_IMAGE:${{ steps.tag.outputs.tag }}"
