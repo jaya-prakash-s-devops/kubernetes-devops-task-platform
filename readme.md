@@ -1,163 +1,405 @@
-# 📸 Project Screenshots
+# DevOps Task Platform
 
-## 1. Application Login Page
+A production-style DevOps project demonstrating GitOps-based Kubernetes deployment using ArgoCD, automated CI/CD with GitHub Actions, containerization using Docker, monitoring with Prometheus and Grafana, and a full-stack task management application.
 
-The user authentication page for accessing the DevOps Task Platform.
+---
+
+## Project Overview
+
+The DevOps Task Platform is a multi-tier web application deployed on Kubernetes using K3s.
+
+The project demonstrates:
+
+- Docker containerization
+- Kubernetes orchestration
+- GitHub Actions CI pipeline
+- GitOps deployment with ArgoCD
+- Prometheus monitoring
+- Grafana dashboards
+- MySQL database integration
+- Automated image version management
+- Self-healing Kubernetes deployments
+
+---
+
+# Architecture
+
+```text
+Developer
+    │
+    ▼
+GitHub Repository
+    │
+    ▼
+GitHub Actions CI
+(Build & Push Images)
+    │
+    ▼
+Docker Hub
+    │
+    ▼
+Update Kubernetes Manifests
+    │
+    ▼
+Git Repository
+    │
+    ▼
+ArgoCD
+    │
+    ▼
+K3s Kubernetes Cluster
+    │
+ ┌──┴──┐
+ ▼     ▼
+Frontend Backend
+          │
+          ▼
+        MySQL
+
+Monitoring Stack
+
+Prometheus
+     │
+     ▼
+Grafana
+```
+
+---
+
+# Technology Stack
+
+## Cloud & Infrastructure
+
+- AWS EC2
+- K3s Kubernetes
+- Docker
+- Docker Hub
+
+## CI/CD & GitOps
+
+- GitHub Actions
+- ArgoCD
+- Git
+- GitHub
+
+## Monitoring
+
+- Prometheus
+- Grafana
+- Node Exporter
+- MySQL Exporter
+- ServiceMonitors
+
+## Application
+
+### Frontend
+
+- HTML
+- CSS
+- JavaScript
+
+### Backend
+
+- Python
+- Flask
+
+### Database
+
+- MySQL
+
+---
+
+# GitOps Workflow
+
+1. Developer pushes code to GitHub.
+2. GitHub Actions builds backend and frontend Docker images.
+3. Images are pushed to Docker Hub.
+4. GitHub Actions automatically updates Kubernetes image tags.
+5. Updated manifests are committed back to GitHub.
+6. ArgoCD detects repository changes.
+7. ArgoCD automatically synchronizes the Kubernetes cluster.
+8. New application version is deployed.
+9. Prometheus and Grafana monitor application health.
+
+---
+
+# CI/CD Features
+
+### GitHub Actions
+
+- Automated image build
+- Docker Hub image push
+- Automatic image tag generation
+- Automatic Kubernetes manifest update
+- GitOps integration
+
+### ArgoCD
+
+- Automatic synchronization
+- Self-healing
+- Automated deployment
+- GitOps-based state management
+
+---
+
+# Project Screenshots
+
+## Application Login Page
+
+User authentication page.
 
 ![Application Login](screenshots/application-login-page.png)
 
 ---
 
-## 2. Task Management Dashboard
+## Application Dashboard
 
-Main application dashboard showing task creation, task status tracking and CRUD operations.
+Task management dashboard showing task tracking and CRUD operations.
 
 ![Application Dashboard](screenshots/application-dashboard.png)
 
 ---
 
-## 3. GitOps Deployment with ArgoCD
+## ArgoCD GitOps Deployment
 
-ArgoCD continuously monitors the Git repository and automatically synchronizes Kubernetes resources when changes are detected.
+ArgoCD automatically synchronizing Kubernetes resources from Git.
 
-Features demonstrated:
+Features:
 
-- Healthy Application State
-- Synced Status
-- Automatic Deployment
-- GitOps Workflow
-- Self-Healing Capability
+- Healthy status
+- Synced status
+- Automatic deployment
+- Self-healing
 
 ![ArgoCD GitOps](screenshots/argocd-gitops-sync.png)
 
 ---
 
-## 4. Kubernetes Cluster Resources
+## Kubernetes Resources
 
-Verification of running Kubernetes workloads.
+Running Kubernetes resources inside the cluster.
 
-Resources shown:
+Features:
 
-- Backend Deployment (3 Replicas)
-- Frontend Deployment (3 Replicas)
-- MySQL Database
+- Backend deployment
+- Frontend deployment
+- MySQL deployment
 - Services
 - ReplicaSets
-- Namespace Resources
 
 ![Kubernetes Resources](screenshots/kubernetes-resources.png)
 
 ---
 
-## 5. Prometheus Backend Monitoring
+## Prometheus Backend Monitoring
 
-Prometheus successfully scraping metrics from all backend application pods.
+Prometheus scraping backend application metrics.
 
-Features demonstrated:
+Features:
 
-- ServiceMonitor Integration
-- Backend Metrics Collection
-- Multi-Pod Monitoring
+- Backend ServiceMonitor
+- Multiple backend replicas
+- Metrics collection
 
 ![Prometheus Backend Targets](screenshots/prometheus-backend-targets.png)
 
 ---
 
-## 6. Prometheus MySQL Monitoring
+## Prometheus MySQL Monitoring
 
-Prometheus collecting database metrics through MySQL Exporter.
+Monitoring MySQL through MySQL Exporter.
 
-Features demonstrated:
-
-- Database Metrics Collection
-- MySQL Exporter Integration
-
-![Prometheus MySQL](screenshots/prometheus-mysql-target.png)
+![Prometheus MySQL Target](screenshots/prometheus-mysql-target.png)
 
 ---
 
-## 7. Prometheus Cluster Monitoring
+## Prometheus Cluster Monitoring
 
-Monitoring of Prometheus services and cluster observability components.
-
-Features demonstrated:
-
-- Prometheus Health
-- Cluster Monitoring Components
+Prometheus monitoring internal cluster services.
 
 ![Prometheus Cluster Monitoring](screenshots/prometheus-cluster-monitoring.png)
 
 ---
 
-## 8. Core Kubernetes Monitoring Services
+## Prometheus Core Services
 
-Infrastructure monitoring services used by Prometheus.
+Cluster observability services.
 
-Features demonstrated:
+Features:
 
-- Kube State Metrics
 - Node Exporter
-- Kubernetes Cluster Metrics
+- Kube State Metrics
 
 ![Prometheus Core Services](screenshots/prometheus-core-services.png)
 
 ---
 
-## 9. Infrastructure Health Dashboard
+## Grafana Infrastructure Dashboard
 
-Grafana dashboard visualizing node-level metrics.
+Infrastructure monitoring dashboard.
 
-Metrics monitored:
+Metrics:
 
 - CPU Usage
 - Memory Usage
 - Backend Pod Availability
-- Replica Health
 
 ![Infrastructure Health](screenshots/grafana-infrastructure-health.png)
 
 ---
 
-## 10. Application Performance Dashboard
+## Grafana Application Dashboard
 
-Grafana dashboard showing application traffic and performance metrics.
+Application monitoring dashboard.
 
-Metrics monitored:
+Metrics:
 
-- Total Requests
 - Request Rate
 - Response Time
 - Success Rate
+- Total Requests
 
 ![Application Metrics](screenshots/grafana-application-metrics.png)
 
 ---
 
-## 11. Cluster & Database Health Dashboard
+## Grafana Cluster & Database Health Dashboard
 
-Grafana dashboard showing Kubernetes and MySQL health status.
+Cluster and database health monitoring.
 
-Metrics monitored:
+Metrics:
 
-- Database Availability
-- Database Connectivity
-- Total Pods
 - Running Pods
 - Cluster Health
+- Database Status
+- Database Connectivity
 
 ![Cluster Database Health](screenshots/grafana-cluster-database-health.png)
 
 ---
 
-## 12. Database Performance Dashboard
+## Grafana Database Performance Dashboard
 
-Grafana dashboard for MySQL performance monitoring.
+Database performance monitoring.
 
-Metrics monitored:
+Metrics:
 
-- MySQL Queries per Second
+- MySQL Queries/sec
 - MySQL Connections
 - MySQL Uptime
 - Database Error Rate
 
 ![Database Performance](screenshots/grafana-database-performance.png)
+
+---
+
+# Kubernetes Resources
+
+Application Namespace:
+
+```bash
+devops-platform
+```
+
+Deployments:
+
+```bash
+backend
+frontend
+mysql
+```
+
+Services:
+
+```bash
+backend-service
+frontend-service
+mysql
+```
+
+Monitoring Components:
+
+```bash
+Prometheus
+Grafana
+Node Exporter
+MySQL Exporter
+ServiceMonitors
+AlertManager
+```
+
+---
+
+# Deployment Instructions
+
+## Clone Repository
+
+```bash
+git clone https://github.com/jaya-prakash-s-devops/kubernetes-devops-task-platform.git
+
+cd kubernetes-devops-task-platform
+```
+
+## Deploy Application
+
+```bash
+kubectl apply -f .
+```
+
+## Deploy ArgoCD Application
+
+```bash
+kubectl apply -f argocd/application.yml
+```
+
+## Verify Resources
+
+```bash
+kubectl get all -n devops-platform
+```
+
+---
+
+# Monitoring Access
+
+## Grafana
+
+```text
+http://<NODE-IP>:30080
+```
+
+## Prometheus
+
+```text
+http://<NODE-IP>:30090
+```
+
+## ArgoCD
+
+```text
+http://<NODE-IP>:8080
+```
+
+---
+
+# Key Achievements
+
+- Implemented GitOps deployment with ArgoCD
+- Automated CI pipeline using GitHub Actions
+- Automated Kubernetes image updates
+- Built a multi-tier Kubernetes application
+- Implemented Prometheus monitoring
+- Built Grafana dashboards
+- Configured MySQL monitoring
+- Configured Kubernetes observability
+- Implemented self-healing deployments
+- Managed rolling application updates
+
+---
+
+# Author
+
+**Jaya Prakash S**
+
+- GitHub: https://github.com/jaya-prakash-s-devops
+- LinkedIn: https://www.linkedin.com/in/jaya-prakash-s-devops
