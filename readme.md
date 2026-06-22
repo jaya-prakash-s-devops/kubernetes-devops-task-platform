@@ -1,4 +1,3 @@
-
 <div align="center">
 
 # ⚙️ DevOps Task Platform
@@ -115,8 +114,6 @@ The **DevOps Task Platform** is a portfolio project that simulates a production 
 
 ## ✅ Application Features
 
-The application is a task manager with full CRUD capability:
-
 - **User Registration** — Create a new account
 - **User Login / Logout** — Session-based authentication
 - **Task Creation** — Add tasks with a description
@@ -195,8 +192,6 @@ Every deployment is tagged with the Git commit SHA, making every release fully a
 
 ## ⚙️ CI Pipeline
 
-The GitHub Actions pipeline runs automatically on every push to `main`:
-
 ```
 Trigger: push to main
     │
@@ -225,37 +220,17 @@ Trigger: push to main
 |---|---|---|
 | Backend pods | Built-in `/metrics` | Request rate, response time, error rate, success % |
 | MySQL | MySQL Exporter (9104) | Queries/sec, connections, uptime |
-| Node | Node Exporter (9100) | CPU %, memory %, disk I/O |
+| Node | Node Exporter (9100) | CPU %, memory % |
 | Kubernetes | kube-state-metrics | Pod count, deployment health |
-| Prometheus | Self-scrape | Prometheus internals |
-
-All targets are configured using **Prometheus ServiceMonitors** for automatic discovery.
 
 ### Grafana Dashboards
 
-**Infrastructure Health**
-- Node Memory Usage %
-- Node CPU Usage %
-- Backend Pods Up / Available
-
-**Application Metrics**
-- Total HTTP Requests — `2,590+`
-- Backend Request Rate per pod
-- Backend Response Time
-- Backend Success Rate — `100%`
-- Backend Error Rate — `0`
-
-**Cluster and Database Health**
-- Total Pods — `22` / Running — `22`
-- Cluster Health — `1`
-- MySQL Database Up — `1`
-- Database Connectivity — `1`
-
-**Database Performance**
-- MySQL Queries/sec
-- MySQL Active Connections — `7`
-- MySQL Uptime — `17,906 seconds`
-- Database Error Rate
+| Dashboard | Key Metrics |
+|---|---|
+| **Infrastructure Health** | Node CPU/Memory %, Backend pod count |
+| **Application Metrics** | Total requests (2,590+), Success rate (100%), Error rate (0) |
+| **Cluster & Database Health** | 22/22 pods running, MySQL up, Cluster health: 1 |
+| **Database Performance** | MySQL queries/sec, 7 connections, 17,906s uptime |
 
 ### Monitoring Access
 
@@ -273,21 +248,16 @@ All targets are configured using **Prometheus ServiceMonitors** for automatic di
 kubernetes-devops-task-platform/
 ├── .github/
 │   └── workflows/
-│       ├── deploy.yml                   # Full CI/CD pipeline
-│       └── deploy-ci-only.yml           # CI-only workflow
-│
+│       ├── deploy.yml
+│       └── deploy-ci-only.yml
 ├── argocd/
-│   └── application.yml                  # ArgoCD Application manifest
-│
-├── backend/                             # Backend Kubernetes manifests
-├── backend-src/                         # Python Flask source code
-│
-├── frontend/                            # Frontend Kubernetes manifests
-├── frontend-src/                        # HTML / CSS / JS source code
-│
-├── k8/                                  # Core Kubernetes manifests
-├── mysql/                               # MySQL deployment manifests
-│
+│   └── application.yml
+├── backend/
+├── backend-src/
+├── frontend/
+├── frontend-src/
+├── k8/
+├── mysql/
 ├── monitoring/
 │   ├── alertmanager/
 │   │   ├── alertmanager-config.yml
@@ -299,9 +269,14 @@ kubernetes-devops-task-platform/
 │   ├── backend-service-monitor.yml
 │   ├── mysql-service-monitor.yml
 │   └── values.yml
-│
-└── docs/
-    └── screenshots/
+└── screenshots/
+    ├── login-page.png
+    ├── application-dashboard.png
+    ├── github-actions-success.png
+    ├── dockerhub-images.png
+    ├── kubernetes-deployment.png
+    ├── prometheus-targets.png
+    └── grafana-dashboard.png
 ```
 
 ---
@@ -343,18 +318,7 @@ kubectl create secret generic backend-secret \
 kubectl apply -f argocd/application.yml
 ```
 
-ArgoCD will detect the manifests in the repository and automatically sync the full application stack to the cluster.
-
-### 5 — Add GitHub Actions Secrets
-
-In your GitHub repository go to **Settings → Secrets → Actions** and add:
-
-| Secret | Value |
-|---|---|
-| `DOCKER_USERNAME` | Your Docker Hub username |
-| `DOCKER_PASSWORD` | Your Docker Hub access token |
-
-### 6 — Verify the Deployment
+### 5 — Verify the Deployment
 
 ```bash
 kubectl get all -n devops-platform
@@ -368,93 +332,43 @@ Expected: 3 backend pods, 3 frontend pods, 1 MySQL pod — all `Running` with 0 
 
 ### Application — Login Page
 
-![Application Login Page](docs/screenshots/application-login-page.png)
+![Login Page](screenshots/login-page.png)
 
 ---
 
 ### Application — Task Dashboard
 
-![Application Dashboard](docs/screenshots/application-dashboard.png)
+![Application Dashboard](screenshots/application-dashboard.png)
 
 ---
 
-### ArgoCD — GitOps Sync Status
+### GitHub Actions — CI Pipeline Success
 
-> App Health: **Healthy** · Sync Status: **Synced** to `production-v2` · Auto-sync: **Enabled**
-
-![ArgoCD GitOps Sync](docs/screenshots/screenshots-argocd-gitops-sync.png)
+![GitHub Actions Success](screenshots/github-actions-success.png)
 
 ---
 
-### Kubernetes Resources
+### Docker Hub — Published Images
 
-> 3 backend pods · 3 frontend pods · 1 MySQL pod · All `Running` · 0 restarts
-
-![Kubernetes Resources](docs/screenshots/kubernetes-resources.png)
+![Docker Hub Images](screenshots/dockerhub-images.png)
 
 ---
 
-### Prometheus — Backend Targets
+### Kubernetes — Running Resources
 
-> All 3 backend pod endpoints scraped and **UP** via ServiceMonitor
-
-![Prometheus Backend Targets](docs/screenshots/prometheus-backend-targets.png)
+![Kubernetes Deployment](screenshots/kubernetes-deployment.png)
 
 ---
 
-### Prometheus — MySQL Target
+### Prometheus — Scrape Targets
 
-> MySQL Exporter endpoint scraped and **UP**
-
-![Prometheus MySQL Target](docs/screenshots/prometheus-mysql-target.png)
+![Prometheus Targets](screenshots/prometheus-targets.png)
 
 ---
 
-### Prometheus — Cluster Monitoring
+### Grafana — Monitoring Dashboard
 
-> kube-state-metrics and Node Exporter both **UP**
-
-![Prometheus Cluster Monitoring](docs/screenshots/prometheus-cluster-monitoring.png)
-
----
-
-### Prometheus — Core Services
-
-> Prometheus self-monitoring endpoints **UP**
-
-![Prometheus Core Services](docs/screenshots/prometheus-core-services.png)
-
----
-
-### Grafana — Infrastructure Health Dashboard
-
-> Node memory ~80% · CPU tracked · 3 backend pods healthy
-
-![Grafana Infrastructure Health](docs/screenshots/grafana-infrastructure-health.png)
-
----
-
-### Grafana — Application Metrics Dashboard
-
-> 2,590 total requests · 100% success rate · 0 errors · Response time within bounds
-
-![Grafana Application Metrics](docs/screenshots/grafana-application-metrics.png)
-
----
-
-### Grafana — Cluster and Database Health Dashboard
-
-> 22/22 pods running · MySQL UP · Database connectivity: 1 · Cluster health: 1
-
-![Grafana Cluster Database Health](docs/screenshots/grafana-cluster-database-health.png)
-
----
-
-### Grafana — Database Performance Dashboard
-
-> MySQL queries/sec stable · 7 active connections · 17,906 seconds uptime
-
-![Grafana Database Performance](docs/screenshots/grafana-database-performance.png)
+![Grafana Dashboard](screenshots/grafana-dashboard.png)
 
 ---
 
@@ -464,7 +378,7 @@ Expected: 3 backend pods, 3 frontend pods, 1 MySQL pod — all `Running` with 0 
 - Implemented GitOps with ArgoCD enabling automatic, self-healing deployments
 - Built an end-to-end GitHub Actions CI pipeline with automatic image tagging and manifest updates
 - Configured Prometheus with ServiceMonitors for automatic metrics discovery across all services
-- Built four custom Grafana dashboards covering infrastructure, application, cluster, and database health
+- Built custom Grafana dashboards covering infrastructure, application, cluster, and database health
 - Applied Kubernetes production best practices — health probes, secrets management, PVCs, namespace isolation, and rolling updates
 
 ---
