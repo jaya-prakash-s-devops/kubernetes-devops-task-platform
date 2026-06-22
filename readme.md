@@ -27,7 +27,7 @@
 - [GitOps Workflow](#-gitops-workflow)
 - [Kubernetes Infrastructure](#-kubernetes-infrastructure)
 - [CI Pipeline](#-ci-pipeline)
-- [Monitoring & Observability](#-monitoring--observability)
+- [Monitoring and Observability](#-monitoring-and-observability)
 - [Project Structure](#-project-structure)
 - [Getting Started](#-getting-started)
 - [Screenshots](#-screenshots)
@@ -44,8 +44,6 @@ The **DevOps Task Platform** is a portfolio project built to demonstrate core De
 - **Automated CI pipeline** with GitHub Actions that builds, pushes, and updates image tags on every commit
 - **Full observability stack** using Prometheus, Grafana, Node Exporter, and MySQL Exporter with custom dashboards
 
-This project reflects the kind of infrastructure a small engineering team would run in a real-world production environment.
-
 ---
 
 ## 🏗️ Architecture
@@ -59,23 +57,23 @@ This project reflects the kind of infrastructure a small engineering team would 
                            │
                            ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                    GitOps (ArgoCD)                               │
-│         Watches Git repo → Syncs to K3s cluster                  │
+│                       GitOps (ArgoCD)                            │
+│            Watches Git repo → Syncs to K3s cluster              │
 └──────────────────────────┬──────────────────────────────────────┘
                            │
                            ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                   K3s Kubernetes Cluster                          │
+│                    K3s Kubernetes Cluster                         │
 │                                                                  │
-│  Namespace: devops-platform          Namespace: monitoring       │
-│  ┌──────────────────────────┐       ┌───────────────────────┐   │
-│  │  frontend (3 replicas)   │       │  Prometheus            │   │
-│  │  backend  (3 replicas)   │       │  Grafana               │   │
-│  │  mysql    (1 replica)    │       │  Alertmanager          │   │
-│  │  ConfigMaps / Secrets    │       │  Node Exporter         │   │
-│  │  PVC for MySQL           │       │  MySQL Exporter        │   │
-│  └──────────────────────────┘       │  ServiceMonitors       │   │
-│                                     └───────────────────────┘   │
+│  Namespace: devops-platform        Namespace: monitoring         │
+│  ┌────────────────────────────┐   ┌─────────────────────────┐   │
+│  │  frontend  (3 replicas)    │   │  Prometheus             │   │
+│  │  backend   (3 replicas)    │   │  Grafana                │   │
+│  │  mysql     (1 replica)     │   │  Alertmanager           │   │
+│  │  ConfigMaps / Secrets      │   │  Node Exporter          │   │
+│  │  PVC for MySQL             │   │  MySQL Exporter         │   │
+│  └────────────────────────────┘   │  ServiceMonitors        │   │
+│                                   └─────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -86,7 +84,7 @@ This project reflects the kind of infrastructure a small engineering team would 
 | Layer | Technology |
 |---|---|
 | **Frontend** | HTML, CSS, JavaScript |
-| **Backend** | Python (Flask) |
+| **Backend** | Python Flask |
 | **Database** | MySQL |
 | **Containerization** | Docker |
 | **Orchestration** | K3s Kubernetes |
@@ -99,14 +97,12 @@ This project reflects the kind of infrastructure a small engineering team would 
 
 ## ✅ Application Features
 
-The application itself is a straightforward task manager with:
-
 - **User Registration** — Create a new account
 - **User Login / Logout** — Session-based authentication
 - **Task Creation** — Add tasks with a description
-- **Task Management** — View and manage all your tasks
+- **Task Management** — View and manage all tasks
 - **Status Tracking** — Track tasks as `Pending`, `In Progress`, or `Completed`
-- **Filtered Views** — Filter task list by status
+- **Filtered Views** — Filter the task list by status
 
 ---
 
@@ -114,25 +110,25 @@ The application itself is a straightforward task manager with:
 
 ```
 Developer → git push → GitHub Repository
-                            │
-                            ▼
-                    GitHub Actions CI
-                    ├── Build frontend Docker image
-                    ├── Build backend Docker image
-                    ├── Push images to Docker Hub
-                    └── Update image tags in K8s manifests
-                            │
-                            ▼
-                    GitHub Repository (updated manifests)
-                            │
-                            ▼
-                        ArgoCD
-                    ├── Detects manifest diff
-                    ├── Auto-syncs to K3s cluster
-                    └── Reconciles desired vs actual state
-                            │
-                            ▼
-                    K3s Cluster (updated deployment)
+                              │
+                              ▼
+                      GitHub Actions CI
+                      ├── Build frontend Docker image
+                      ├── Build backend Docker image
+                      ├── Push images to Docker Hub
+                      └── Update image tags in K8s manifests
+                              │
+                              ▼
+                      GitHub Repository (updated manifests)
+                              │
+                              ▼
+                          ArgoCD
+                      ├── Detects manifest diff
+                      ├── Auto-syncs to K3s cluster
+                      └── Reconciles desired vs actual state
+                              │
+                              ▼
+                      K3s Cluster (updated deployment)
 ```
 
 ArgoCD continuously reconciles the cluster state against the Git repository. If any resource drifts from the declared state, ArgoCD automatically corrects it — providing **self-healing** behavior without manual intervention.
@@ -140,10 +136,6 @@ ArgoCD continuously reconciles the cluster state against the Git repository. If 
 ---
 
 ## ☸️ Kubernetes Infrastructure
-
-### Namespace
-
-All application workloads are isolated in the `devops-platform` namespace. Monitoring components run in a separate `monitoring` namespace.
 
 ### Workloads
 
@@ -155,20 +147,20 @@ All application workloads are isolated in the `devops-platform` namespace. Monit
 
 ### Services
 
-| Service | Type | Port |
+| Service | Type | Ports |
 |---|---|---|
 | `frontend-service` | NodePort | 80:30080 |
 | `backend-service` | NodePort | 5000:30500 |
 | `mysql` | ClusterIP | 3306, 9104 |
 
-### Key Kubernetes Features Used
+### Key Features Used
 
-- **Namespace isolation** — Application and monitoring separated
+- **Namespace isolation** — Application and monitoring in separate namespaces
 - **Deployments** — Declarative replica management with rolling updates
 - **ConfigMaps** — Externalized application configuration
 - **Secrets** — Sensitive values (DB credentials) stored securely
 - **Persistent Volume Claim** — MySQL data persisted across pod restarts
-- **Readiness Probes** — Traffic only sent to healthy pods
+- **Readiness Probes** — Traffic only routed to healthy pods
 - **Liveness Probes** — Unhealthy pods automatically restarted
 - **Rolling Updates** — Zero-downtime deployments via ArgoCD sync
 
@@ -176,9 +168,7 @@ All application workloads are isolated in the `devops-platform` namespace. Monit
 
 ## ⚙️ CI Pipeline
 
-The GitHub Actions workflow runs on every push to the main branch:
-
-```yaml
+```
 Trigger: push to main
   │
   ├── Step 1: Build frontend Docker image
@@ -193,46 +183,26 @@ The pipeline uses the Git commit SHA as the Docker image tag, ensuring every dep
 
 ---
 
-## 📊 Monitoring & Observability
-
-The monitoring stack runs in the `monitoring` namespace and scrapes metrics from all key components using Prometheus ServiceMonitors.
+## 📊 Monitoring and Observability
 
 ### Metrics Scraping Targets
 
-| Target | Exporter | Metrics |
+| Target | Exporter | Metrics Collected |
 |---|---|---|
-| Backend pods | Prometheus (built-in) | Request rate, response time, error rate, success % |
+| Backend pods | Prometheus built-in | Request rate, response time, error rate, success % |
 | MySQL | MySQL Exporter (port 9104) | Queries/sec, connections, uptime |
-| K3s Node | Node Exporter (port 9100) | CPU %, memory %, disk I/O |
+| K3s Node | Node Exporter (port 9100) | CPU %, memory % |
 | Kubernetes | kube-state-metrics | Pod count, deployment health |
-| Prometheus itself | Self-scrape | Prometheus internals |
+| Prometheus | Self-scrape | Prometheus internals |
 
 ### Grafana Dashboards
 
-Custom dashboards built to monitor all layers of the stack:
-
-**Infrastructure Health**
-- Node Memory Usage %
-- Node CPU Usage %
-- Backend Pods Up / Available
-
-**Application Metrics**
-- Total HTTP Requests (2,590+ captured)
-- Backend Request Rate (per pod)
-- Backend Response Time
-- Backend Success Rate % (100%)
-- Backend Error Rate (0)
-
-**Cluster & Database Health**
-- MySQL Database Up (status: 1)
-- Database Connectivity (status: 1)
-- Total Pods (22) / Running Pods (22)
-- Cluster Health (status: 1)
-
-**Database Performance**
-- MySQL Queries/sec
-- MySQL Connections (7 active)
-- MySQL Uptime (17,906 seconds)
+| Dashboard | Key Metrics |
+|---|---|
+| **Infrastructure Health** | Node CPU/Memory %, Backend pod count |
+| **Application Metrics** | Total requests (2,590+), Success rate (100%), Error rate (0) |
+| **Cluster & Database Health** | 22/22 pods running, MySQL up, Cluster healthy |
+| **Database Performance** | MySQL queries/sec, 7 connections, 17,906s uptime |
 
 ---
 
@@ -242,17 +212,16 @@ Custom dashboards built to monitor all layers of the stack:
 k8-project-folder/
 ├── .github/
 │   └── workflows/
-│       ├── deploy.yml              # Full CI/CD pipeline
-│       └── deploy-ci-only.yml      # CI-only workflow
+│       ├── deploy.yml
+│       └── deploy-ci-only.yml
 ├── argocd/
-│   └── application.yml             # ArgoCD Application manifest
-├── backend/                        # Kubernetes manifests for backend
-├── backend-src/                    # Flask application source
-├── frontend/                       # Kubernetes manifests for frontend
-├── frontend-src/                   # HTML/CSS/JS source
-├── ingress/                        # Ingress resource definitions
-├── k8/                             # Core Kubernetes manifests
-├── mysql/                          # MySQL deployment manifests
+│   └── application.yml
+├── backend/
+├── backend-src/
+├── frontend/
+├── frontend-src/
+├── k8/
+├── mysql/
 ├── monitoring/
 │   ├── alertmanager/
 │   │   ├── alertmanager-config.yml
@@ -274,10 +243,10 @@ k8-project-folder/
 
 ### Prerequisites
 
-- A running K3s cluster
+- K3s cluster running
 - `kubectl` configured to point at your cluster
 - ArgoCD installed in the cluster
-- Docker Hub account (for image pushes)
+- Docker Hub account
 - GitHub repository with Actions enabled
 
 ### 1. Clone the Repository
@@ -289,8 +258,6 @@ cd devops-task-platform
 
 ### 2. Configure Secrets
 
-Create the required Kubernetes secrets (DB credentials, Docker Hub credentials) before applying manifests:
-
 ```bash
 kubectl create namespace devops-platform
 
@@ -301,13 +268,9 @@ kubectl create secret generic backend-secret \
 
 ### 3. Register the App in ArgoCD
 
-Apply the ArgoCD Application manifest to register the app for GitOps sync:
-
 ```bash
 kubectl apply -f argocd/application.yml
 ```
-
-ArgoCD will detect the manifests in the repo and automatically sync the full application to the cluster.
 
 ### 4. Set GitHub Actions Secrets
 
@@ -324,77 +287,101 @@ In your GitHub repository settings, add the following secrets:
 kubectl get all -n devops-platform
 ```
 
-Expected output: 3 backend pods, 3 frontend pods, 1 MySQL pod — all in `Running` state.
+Expected: 3 backend pods, 3 frontend pods, 1 MySQL pod — all `Running` with 0 restarts.
 
 ---
 
 ## 📸 Screenshots
 
-### Application
+### Application — Login Page
 
-**Login Page**
-
-![Login Page](screenshots/application-login-page.png)
-
-**Task Dashboard** — shows task creation, status tracking, and filters
-
-![Dashboard](screenshots/application-dashboard.png)
+![Application Login Page](docs/screenshots/application-login-page.png)
 
 ---
 
-### ArgoCD — GitOps Sync
+### Application — Task Dashboard
 
-Application health: **Healthy** | Sync status: **Synced** | Auto-sync: **Enabled**
+![Application Dashboard](docs/screenshots/application-dashboard.png)
 
-![ArgoCD Sync](screenshots/screenshots-argocd-gitops-sync.png)
+---
+
+### ArgoCD — GitOps Sync Status
+
+> App Health: **Healthy** | Sync Status: **Synced** to `production-v2` | Auto-sync: **Enabled**
+
+![ArgoCD GitOps Sync](docs/screenshots/screenshots-argocd-gitops-sync.png)
 
 ---
 
 ### Kubernetes Resources
 
-All pods running with 0 restarts across backend, frontend, and MySQL deployments.
+> All pods running with 0 restarts — 3 backend, 3 frontend, 1 MySQL.
 
-![Kubernetes Resources](screenshots/kubernetes-resources.png)
-
----
-
-### Prometheus — Monitoring Targets
-
-**Backend Service Monitor** — All 3 backend pod endpoints scraped and UP
-
-![Backend Targets](screenshots/prometheus-backend-targets.png)
-
-**MySQL Exporter Target** — MySQL metrics endpoint scraped and UP
-
-![MySQL Target](screenshots/prometheus-mysql-target.png)
-
-**Cluster Monitoring** — kube-state-metrics and Node Exporter both UP
-
-![Cluster Monitoring](screenshots/prometheus-cluster-monitoring.png)
-
-**Core Services** — Prometheus self-monitoring endpoints UP
-
-![Core Services](screenshots/prometheus-core-services.png)
+![Kubernetes Resources](docs/screenshots/kubernetes-resources.png)
 
 ---
 
-### Grafana Dashboards
+### Prometheus — Backend Targets
 
-**Infrastructure Health** — Node memory ~80%, CPU usage, 3 backend pods running
+> All 3 backend pod endpoints scraped and **UP** via ServiceMonitor.
 
-![Infrastructure Health](screenshots/grafana-infrastructure-health.png)
+![Prometheus Backend Targets](docs/screenshots/prometheus-backend-targets.png)
 
-**Application Metrics** — 2,590 total requests, 100% success rate, 0 errors
+---
 
-![Application Metrics](screenshots/grafana-application-metrics.png)
+### Prometheus — MySQL Target
 
-**Cluster & Database Health** — 22/22 pods running, MySQL up, cluster healthy
+> MySQL Exporter endpoint scraped and **UP**.
 
-![Cluster & Database Health](screenshots/grafana-cluster-database-health.png)
+![Prometheus MySQL Target](docs/screenshots/prometheus-mysql-target.png)
 
-**Database Performance** — MySQL queries/sec, 7 connections, 17,906s uptime
+---
 
-![Database Performance](screenshots/grafana-database-performance.png)
+### Prometheus — Cluster Monitoring
+
+> kube-state-metrics and Node Exporter both **UP**.
+
+![Prometheus Cluster Monitoring](docs/screenshots/prometheus-cluster-monitoring.png)
+
+---
+
+### Prometheus — Core Services
+
+> Prometheus self-monitoring endpoints **UP**.
+
+![Prometheus Core Services](docs/screenshots/prometheus-core-services.png)
+
+---
+
+### Grafana — Infrastructure Health Dashboard
+
+> Node memory ~80%, CPU usage tracked, 3 backend pods healthy.
+
+![Grafana Infrastructure Health](docs/screenshots/grafana-infrastructure-health.png)
+
+---
+
+### Grafana — Application Metrics Dashboard
+
+> 2,590 total requests | 100% success rate | 0 errors
+
+![Grafana Application Metrics](docs/screenshots/grafana-application-metrics.png)
+
+---
+
+### Grafana — Cluster and Database Health Dashboard
+
+> 22/22 pods running | MySQL UP | Database connectivity: 1 | Cluster health: 1
+
+![Grafana Cluster Database Health](docs/screenshots/grafana-cluster-database-health.png)
+
+---
+
+### Grafana — Database Performance Dashboard
+
+> MySQL queries/sec stable | 7 active connections | 17,906 seconds uptime
+
+![Grafana Database Performance](docs/screenshots/grafana-database-performance.png)
 
 ---
 
@@ -405,7 +392,7 @@ This project demonstrates the ability to:
 - Containerize a multi-service application with Docker
 - Deploy and manage workloads on a self-managed Kubernetes cluster (K3s)
 - Implement GitOps with ArgoCD for declarative, automated deployment
-- Build a CI pipeline with GitHub Actions that produces tagged, traceable Docker images
+- Build a CI pipeline with GitHub Actions producing tagged, traceable Docker images
 - Configure a full observability stack (Prometheus + Grafana + exporters) with custom dashboards
 - Apply Kubernetes best practices: health probes, secrets management, PVCs, namespace isolation, and rolling updates
 
